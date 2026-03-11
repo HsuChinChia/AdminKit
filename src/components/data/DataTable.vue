@@ -82,7 +82,7 @@ interface Column {
 
 const props = withDefaults(defineProps<{
   columns: Column[]
-  rows?: any[]
+  rows?: readonly any[] | any[]
   loading?: boolean
   paginate?: boolean
   total?: number

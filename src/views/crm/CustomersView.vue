@@ -21,7 +21,7 @@
       :loading="loading"
       :total="total"
       :current-page="page"
-      :total-pages="totalPages()"
+      :total-pages="totalPages"
       search-placeholder="搜尋客戶名稱或統編..."
       @search="onSearch"
       @sort="onSort"
@@ -33,6 +33,13 @@
       </template>
       <template #cell-actions="{ row }">
         <div class="flex gap-2">
+          <button 
+            @click.stop="goToDetail(row)"
+            class="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+            title="查看詳情"
+          >
+            <Eye class="w-4 h-4" />
+          </button>
           <button 
             v-if="auth.hasPermission('customers:edit')"
             @click.stop="openModal(row)"
@@ -112,7 +119,7 @@ import { useRouter } from 'vue-router'
 import { useCRUD } from '@/composables/useCRUD'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notifications'
-import { Building, Edit2, Trash2, X, Loader2 } from 'lucide-vue-next'
+import { Building, Edit2, Trash2, X, Loader2, Eye } from 'lucide-vue-next'
 import DataTable from '@/components/data/DataTable.vue'
 
 interface Customer {
@@ -143,10 +150,8 @@ const columns = computed<ColumnDef[]>(() => {
     { key: 'tax_id',   label: '統編' },
     { key: 'industry', label: '產業類別' },
     { key: 'created_at', label: '建立時間' },
+    { key: 'actions', label: '操作', sortable: false }
   ]
-  if (auth.hasPermission('customers:edit') || auth.hasPermission('customers:delete')) {
-    cols.push({ key: 'actions', label: '操作', sortable: false })
-  }
   return cols
 })
 

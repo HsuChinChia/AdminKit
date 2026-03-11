@@ -50,8 +50,12 @@ export function useUpload(bucket: string) {
         xhr.send(file)
       })
 
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath)
-      url.value      = urlData.publicUrl
+      try {
+        const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath)
+        url.value = urlData.publicUrl
+      } catch (e) {
+        url.value = filePath // Fallback for private buckets
+      }
       progress.value = 100
       return { path: filePath, url: url.value, error: null }
     } catch (e: any) {

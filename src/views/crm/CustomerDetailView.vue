@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-6" v-if="customer">
+  <div>
+    <div class="space-y-6" v-if="customer">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-4">
@@ -15,7 +16,7 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <button v-if="auth.hasPermission('customers:edit')" class="btn-secondary flex items-center gap-2">
+        <button v-if="auth.hasPermission('customers:edit')" @click="openCustomerEditModal" class="btn-secondary flex items-center gap-2">
           <Edit2 class="w-4 h-4" /> 編輯資料
         </button>
       </div>
@@ -46,7 +47,7 @@
               尚無聯絡人紀錄
             </div>
             <div class="space-y-4" v-else>
-              <div v-for="contact in contacts" :key="contact.id" class="p-4 border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
+              <div v-for="contact in contacts" :key="contact.id" class="group p-4 border border-slate-100 dark:border-slate-800 rounded-lg flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
                 <div class="flex items-center gap-4">
                   <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/50 text-primary-600 flex items-center justify-center font-bold">
                     {{ contact.name.charAt(0) }}
@@ -64,7 +65,10 @@
                   <span v-if="contact.email" class="flex items-center gap-1"><Mail class="w-3.5 h-3.5" /> {{ contact.email }}</span>
                 </div>
                 <div class="ml-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button @click="deleteContact(contact.id)" v-if="auth.hasPermission('customers:edit')" class="p-1.5 text-slate-400 hover:text-red-500 rounded">
+                  <button @click="openContactModal(contact)" v-if="auth.hasPermission('customers:edit')" class="p-1.5 text-slate-400 hover:text-primary-500 rounded" title="編輯">
+                    <Edit2 class="w-4 h-4" />
+                  </button>
+                  <button @click="deleteContact(contact.id)" v-if="auth.hasPermission('customers:edit')" class="p-1.5 text-slate-400 hover:text-red-500 rounded" title="刪除">
                     <Trash2 class="w-4 h-4" />
                   </button>
                 </div>
@@ -140,7 +144,7 @@
   <div v-if="isContactModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
     <div class="bg-white dark:bg-surface-dark-muted rounded-xl shadow-xl w-full max-w-sm overflow-hidden flex flex-col">
       <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-        <h3 class="font-semibold text-slate-800 dark:text-white">新增聯絡人</h3>
+        <h3 class="font-semibold text-slate-800 dark:text-white">{{ isContactEditing ? '編輯聯絡人' : '新增聯絡人' }}</h3>
         <button @click="isContactModalOpen = false" class="text-slate-400 hover:text-slate-600"><X class="w-4 h-4"/></button>
       </div>
       <form @submit.prevent="saveContact" class="p-5 space-y-4">
@@ -175,6 +179,51 @@
       </form>
     </div>
   </div>
+
+  <!-- 客戶編輯 Modal -->
+  <div v-if="isCustomerModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div class="bg-white dark:bg-surface-dark-muted rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
+      <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <h3 class="font-semibold text-slate-800 dark:text-white">編輯客戶資料</h3>
+        <button @click="isCustomerModalOpen = false" class="text-slate-400 hover:text-slate-600"><X class="w-4 h-4"/></button>
+      </div>
+      <form @submit.prevent="saveCustomer" class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">公司名稱 <span class="text-red-500">*</span></label>
+          <input v-model="customerForm.name" required class="input w-full" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">統一編號</label>
+            <input v-model="customerForm.tax_id" class="input w-full" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">產業</label>
+            <input v-model="customerForm.industry" class="input w-full" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">網站</label>
+          <input v-model="customerForm.website" class="input w-full" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">地址</label>
+          <input v-model="customerForm.address" class="input w-full" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">備註</label>
+          <textarea v-model="customerForm.notes" class="input w-full h-24 pt-2"></textarea>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-2 shrink-0">
+          <button type="button" @click="isCustomerModalOpen = false" class="btn-secondary py-1.5 px-3 text-sm">取消</button>
+          <button type="submit" :disabled="saving" class="btn-primary py-1.5 px-4 text-sm flex items-center gap-2">
+            <Loader2 v-if="saving" class="w-3.5 h-3.5 animate-spin" />儲存變更
+          </button>
+        </div>
+      </form>
+    </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -192,12 +241,19 @@ const auth = useAuthStore()
 const notify = useNotificationStore()
 
 const loading = ref(true)
+const saving = ref(false)
 const customerId = route.params.id as string
 const customer = ref<any>(null)
 const contacts = ref<any[]>([])
 const deals = ref<any[]>([])
-const saving = ref(false)
 const isContactModalOpen = ref(false)
+const isContactEditing = ref(false)
+const currentContactId = ref('')
+
+const isCustomerModalOpen = ref(false)
+const customerForm = ref({
+  name: '', tax_id: '', industry: '', website: '', address: '', notes: ''
+})
 
 const contactForm = ref({
   name: '', title: '', phone: '', email: '', is_primary: false
@@ -250,30 +306,93 @@ onMounted(async () => {
   }
 })
 
-function openContactModal() {
-  contactForm.value = { name: '', title: '', phone: '', email: '', is_primary: false }
+function openContactModal(item?: any) {
+  isContactEditing.value = !!item
+  if (item) {
+    currentContactId.value = item.id
+    contactForm.value = { 
+      name: item.name, 
+      title: item.title || '', 
+      phone: item.phone || '', 
+      email: item.email || '', 
+      is_primary: !!item.is_primary 
+    }
+  } else {
+    currentContactId.value = ''
+    contactForm.value = { name: '', title: '', phone: '', email: '', is_primary: false }
+  }
   isContactModalOpen.value = true
+}
+
+function openCustomerEditModal() {
+  customerForm.value = {
+    name: customer.value.name,
+    tax_id: customer.value.tax_id || '',
+    industry: customer.value.industry || '',
+    website: customer.value.website || '',
+    address: customer.value.address || '',
+    notes: customer.value.notes || ''
+  }
+  isCustomerModalOpen.value = true
+}
+
+async function saveCustomer() {
+  saving.value = true
+  try {
+    const { data, error } = await supabase
+      .from('customers')
+      .update(customerForm.value)
+      .eq('id', customerId)
+      .select()
+      .single()
+
+    if (error) throw error
+    customer.value = data
+    notify.success('客戶資料已更新')
+    isCustomerModalOpen.value = false
+  } catch (err: any) {
+    notify.error('更新失敗', err.message)
+  } finally {
+    saving.value = false
+  }
 }
 
 async function saveContact() {
   saving.value = true
   try {
-    const { data, error } = await supabase.from('contacts').insert({
-      ...contactForm.value,
-      customer_id: customerId,
-    }).select().single()
+    if (isContactEditing.value) {
+      const { data, error } = await supabase
+        .from('contacts')
+        .update({ ...contactForm.value })
+        .eq('id', currentContactId.value)
+        .select()
+        .single()
 
-    if (error) throw error
-    if (data) {
-      if (data.is_primary) {
-        contacts.value.forEach(c => c.is_primary = false)
+      if (error) throw error
+      const idx = contacts.value.findIndex(c => c.id === currentContactId.value)
+      if (idx > -1) {
+        if (data.is_primary) contacts.value.forEach(c => c.is_primary = false)
+        contacts.value[idx] = data
       }
-      contacts.value.unshift(data)
+      notify.success('聯絡人已更新')
+    } else {
+      const { data, error } = await supabase.from('contacts').insert({
+        ...contactForm.value,
+        customer_id: customerId,
+      }).select().single()
+
+      if (error) throw error
+      if (data) {
+        if (data.is_primary) {
+          contacts.value.forEach(c => c.is_primary = false)
+        }
+        contacts.value.unshift(data)
+      }
+      notify.success('聯絡人新增成功')
     }
-    notify.success('聯絡人新增成功')
     isContactModalOpen.value = false
   } catch(err: any) {
-    notify.error('新增失敗', err.message)
+    notify.error('儲存失敗', err.message)
   } finally {
     saving.value = false
   }

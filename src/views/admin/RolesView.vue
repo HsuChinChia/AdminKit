@@ -20,7 +20,7 @@
       :loading="loading"
       :total="total"
       :current-page="page"
-      :total-pages="totalPages()"
+      :total-pages="totalPages"
       search-placeholder="搜尋角色名稱..."
       @search="onSearch"
       @sort="onSort"
@@ -200,8 +200,18 @@ const PERMISSION_MODULES = [
     ] 
   },
   { 
-    id: 'deals', 
-    label: '商機管理', 
+    id: 'contracts', 
+    label: '合約與文件', 
+    actions: [
+      { id: 'view', label: '瀏覽' }, 
+      { id: 'create', label: '新增' }, 
+      { id: 'edit', label: '編輯' }, 
+      { id: 'delete', label: '刪除' }
+    ] 
+  },
+  { 
+    id: 'tickets', 
+    label: '客服派單', 
     actions: [
       { id: 'view', label: '瀏覽' }, 
       { id: 'create', label: '新增' }, 

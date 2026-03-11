@@ -49,15 +49,15 @@
 
     <!-- Preview List (Optional depending on requirements) -->
     <div v-if="currentUrl && !uploading" class="mt-4 flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-      <div class="flex items-center gap-3 overflow-hidden">
+      <div class="flex items-center gap-3 overflow-hidden w-full">
         <FileIcon class="w-8 h-8 text-primary-500 shrink-0" />
-        <div class="truncate">
-          <a :href="currentUrl" target="_blank" class="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors truncate block">
-            檢視已上傳的檔案
-          </a>
+        <div class="truncate flex-1">
+          <span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate block">
+            {{ currentUrl.split('/').pop() || '已上傳的檔案' }}
+          </span>
         </div>
       </div>
-      <button 
+      <button  
         @click="emit('remove')"
         type="button" 
         class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors shrink-0"
@@ -140,11 +140,11 @@ async function handleFileSelection(file: File) {
     const fileExt = file.name.split('.').pop()
     const filePath = `${props.userId}/documents/${Date.now()}.${fileExt}`
     
-    const { url, error } = await upload(file, filePath)
+    const { path, error } = await upload(file, filePath)
     
     if (error) throw new Error(error)
-    if (url) {
-      emit('update:url', url)
+    if (path) {
+      emit('update:url', path) // We emit the relative path instead of full url
       notify.success('檔案上傳成功')
     }
   } catch (err: any) {

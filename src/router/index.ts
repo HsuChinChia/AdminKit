@@ -63,6 +63,18 @@ const router = createRouter({
           component: () => import('@/views/crm/DealsKanbanView.vue'),
           meta: { title: '銷售漏斗', permissions: ['deals:view'] },
         },
+        {
+          path: 'crm/contracts',
+          name: 'CRMContracts',
+          component: () => import('@/views/crm/ContractsView.vue'),
+          meta: { title: '合約與文件', permissions: ['contracts:view'] },
+        },
+        {
+          path: 'crm/tickets',
+          name: 'CRMTickets',
+          component: () => import('@/views/crm/TicketsView.vue'),
+          meta: { title: '客服派單', permissions: ['tickets:view'] },
+        },
         // ── Admin 專屬 ──────────────────────────────────────
         {
           path: 'admin/users',

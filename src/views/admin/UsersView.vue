@@ -21,7 +21,7 @@
       :loading="loading"
       :total="total"
       :current-page="page"
-      :total-pages="totalPages()"
+      :total-pages="totalPages"
       search-placeholder="搜尋用戶名稱..."
       @search="onSearch"
       @sort="onSort"

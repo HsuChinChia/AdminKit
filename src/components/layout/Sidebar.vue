@@ -65,7 +65,11 @@ import type { Component } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUiStore }   from '@/stores/ui'
-import { LayoutDashboard, ChartColumn, User, Users, Settings, ShieldCheck, Building, Kanban } from 'lucide-vue-next'
+import { LayoutDashboard, ChartColumn, User, Users, Settings, ShieldCheck,  Building,
+  Kanban,
+  FileText,
+  LifeBuoy
+} from 'lucide-vue-next'
 
 const auth  = useAuthStore()
 const ui    = useUiStore()
@@ -102,6 +106,8 @@ const navGroups: NavGroup[] = [
     items: [
       { name: 'customers', label: '客戶管理', to: '/crm/customers', icon: Building, permissions: ['customers:view'] },
       { name: 'deals',     label: '銷售漏斗', to: '/crm/deals',     icon: Kanban,   permissions: ['deals:view'] },
+      { name: 'contracts', label: '合約與文件', to: '/crm/contracts', icon: FileText, permissions: ['contracts:view'] },
+      { name: 'tickets',   label: '客服派單', to: '/crm/tickets',   icon: LifeBuoy, permissions: ['tickets:view'] },
     ],
   },
   {

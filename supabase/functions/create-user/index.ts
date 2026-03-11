@@ -51,6 +51,8 @@ serve(async (req) => {
     // 4. 讀取前端傳來的帳號資料
     const { email, password, username, role_id, phone, gender } = await req.json()
     
+    if (!email) throw new Error('必須提供 電子郵件')
+
     // 5. 使用 Admin API 建立真正的 Auth 使用者，並跳過信箱驗證
     const { data: newAuthUser, error: createUserError } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -68,10 +70,12 @@ serve(async (req) => {
     if (gender) profileUpdates.gender = gender
 
     if (Object.keys(profileUpdates).length > 0) {
-      await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from('profiles')
         .update(profileUpdates)
         .eq('id', newAuthUser.user.id)
+      
+      if (updateError) console.error('更新 Profile 失敗:', updateError)
     }
 
     // 回傳成功結果給前端

@@ -27,6 +27,7 @@ export function useRealtime<T = Record<string, any>>(
 
   const channel = supabase
     .channel(`realtime:${tableName}:${Date.now()}`)
+    // @ts-ignore
     .on('postgres_changes', config, (payload) => {
       const { eventType, new: newRow, old: oldRow } = payload
       if (eventType === 'INSERT' && callbacks.onInsert) callbacks.onInsert(newRow as T)

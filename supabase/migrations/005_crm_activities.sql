@@ -10,7 +10,7 @@ create table if not exists public.activities (
     customer_id uuid references public.customers(id) on delete cascade,    -- 關聯客戶 (必填)
     deal_id uuid references public.deals(id) on delete cascade,            -- 關聯商機 (選填)
     contact_id uuid references public.contacts(id) on delete set null,     -- 關聯特定聯絡人 (選填)
-    owner_id uuid references auth.users(id) on delete set null,            -- 建立業務
+    owner_id uuid references public.profiles(id) on delete set null,            -- 建立業務
     performed_at timestamptz default now(),  -- 實際互動發生時間
     created_at timestamptz default now()
 );
@@ -25,8 +25,8 @@ create table if not exists public.tasks (
     priority text default 'medium' check (priority in ('low', 'medium', 'high')), -- 優先級
     customer_id uuid references public.customers(id) on delete cascade,    -- 關聯客戶 (選填)
     deal_id uuid references public.deals(id) on delete cascade,            -- 關聯商機 (選填)
-    assignee_id uuid references auth.users(id) on delete set null,         -- 指派給誰
-    creator_id uuid references auth.users(id) on delete set null,          -- 任務建立者
+    assignee_id uuid references public.profiles(id) on delete set null,         -- 指派給誰
+    creator_id uuid references public.profiles(id) on delete set null,          -- 任務建立者
     created_at timestamptz default now(),
     updated_at timestamptz default now()
 );

@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { ref, readonly, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 interface FetchOptions {
@@ -84,7 +84,7 @@ export function useCRUD<T = Record<string, any>>(
     return { error: err }
   }
 
-  const totalPages    = () => Math.ceil(total.value / pageSize)
+  const totalPages    = computed(() => Math.ceil(total.value / pageSize))
   const setPage = (p: number) => { page.value = p }
 
   return {
