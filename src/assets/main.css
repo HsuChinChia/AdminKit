@@ -3,9 +3,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .shadow-premium {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), 0 4px 12px -4px rgba(0, 0, 0, 0.03);
+  }
+  .shadow-premium-hover {
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08), 0 8px 20px -6px rgba(0, 0, 0, 0.04);
+  }
+  .shadow-glass {
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.12) 25%,
+      rgba(148, 163, 184, 0.28) 37%,
+      rgba(148, 163, 184, 0.12) 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
 @layer base {
   body {
-    @apply bg-surface-muted text-slate-800 dark:bg-surface-dark dark:text-slate-100 transition-colors duration-200;
+    @apply bg-slate-50 text-slate-800 dark:bg-surface-dark dark:text-slate-100 transition-colors duration-200;
     font-family: 'Inter', system-ui, sans-serif;
   }
 
@@ -26,77 +53,90 @@
 
   /* ——— Buttons ——— */
   .btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-95;
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm shadow-primary-600/20;
+    @apply btn bg-primary-600 text-white hover:bg-primary-500 hover:shadow-lg hover:shadow-primary-600/30 active:bg-primary-700 shadow-premium;
   }
 
   .btn-secondary {
-    @apply btn bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 dark:bg-surface-dark-muted dark:text-slate-200 dark:border-surface-dark-border dark:hover:bg-slate-700;
+    @apply btn bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 dark:bg-surface-dark-muted dark:text-slate-200 dark:border-surface-dark-border dark:hover:bg-slate-800 shadow-sm transition-colors;
   }
 
   .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700;
+    @apply btn bg-red-500 text-white hover:bg-red-400 hover:shadow-lg hover:shadow-red-500/20 active:bg-red-600 shadow-premium;
   }
 
   .btn-ghost {
-    @apply btn text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700;
+    @apply btn text-slate-600 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:bg-slate-800/80;
   }
 
   .btn-sm {
-    @apply btn px-3 py-1.5 text-xs;
+    @apply btn px-3 py-1.5 text-xs rounded-lg;
   }
 
   /* ——— Forms ——— */
   .input {
-    @apply block w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-800 placeholder-slate-400 text-sm transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-surface-dark-muted dark:border-surface-dark-border dark:text-slate-100 dark:placeholder-slate-500;
+    @apply block w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 placeholder-slate-400 text-sm transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 dark:bg-surface-dark-muted dark:border-surface-dark-border dark:text-slate-100 dark:placeholder-slate-500 shadow-sm;
   }
 
   .label {
-    @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1;
+    @apply block text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1.5 ml-0.5;
   }
 
   .form-group {
-    @apply flex flex-col gap-1 mb-4;
+    @apply flex flex-col gap-1 mb-5;
   }
 
   /* ——— Cards ——— */
   .card {
-    @apply bg-white dark:bg-surface-dark-muted border border-surface-border dark:border-surface-dark-border rounded-xl shadow-sm;
+    @apply bg-white dark:bg-surface-dark-muted border border-surface-border dark:border-surface-dark-border rounded-2xl shadow-premium transition-all duration-300;
+  }
+
+  .item-hover {
+    @apply hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors duration-200;
+  }
+
+  .card-premium {
+    @apply card bg-gradient-to-br from-white to-slate-50 border-white/50 dark:from-surface-dark-muted dark:to-surface-dark dark:border-white/5;
   }
 
   .card-body {
-    @apply p-6;
+    @apply p-6 md:p-8;
   }
 
   .card-header {
-    @apply px-6 py-4 border-b border-surface-border dark:border-surface-dark-border;
+    @apply px-6 py-4 md:px-8 border-b border-surface-border dark:border-surface-dark-border flex items-center justify-between;
+  }
+
+  /* ——— Glassmorphism ——— */
+  .glass {
+    @apply bg-white/70 dark:bg-surface-dark-muted/70 backdrop-blur-md border border-white/20 dark:border-white/5 shadow-glass;
   }
 
   /* ——— Badge ——— */
   .badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-transform duration-200 hover:scale-105;
   }
 
   .badge-success {
-    @apply badge bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300;
+    @apply badge bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20;
   }
 
   .badge-warning {
-    @apply badge bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300;
+    @apply badge bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20;
   }
 
   .badge-danger {
-    @apply badge bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300;
+    @apply badge bg-red-50 text-red-600 border border-red-100 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20;
   }
 
   .badge-info {
-    @apply badge bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300;
+    @apply badge bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20;
   }
 
   .badge-default {
-    @apply badge bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300;
+    @apply badge bg-slate-50 text-slate-600 border border-slate-100 dark:bg-slate-500/10 dark:text-slate-400 dark:border-slate-500/20;
   }
 }

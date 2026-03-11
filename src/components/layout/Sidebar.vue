@@ -1,15 +1,15 @@
 <template>
   <aside :class="[
-    'flex flex-col bg-white dark:bg-surface-dark-muted border-r border-surface-border dark:border-surface-dark-border shrink-0 transition-all duration-300 ease-in-out',
-    ui.sidebarOpen ? 'w-64' : 'w-16',
+    'flex flex-col glass border-r border-white/10 dark:border-white/5 shrink-0 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) relative z-20',
+    ui.sidebarOpen ? 'w-72' : 'w-20',
   ]">
     <!-- Logo -->
-    <div class="flex items-center h-16 px-4 border-b border-surface-border dark:border-surface-dark-border">
-      <div class="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center shrink-0">
-        <LayoutDashboard class="w-4 h-4 text-white" />
+    <div class="flex items-center h-20 px-6 border-b border-white/10 dark:border-white/5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-600/30 flex items-center justify-center shrink-0">
+        <LayoutDashboard class="w-5 h-5 text-white" />
       </div>
-      <Transition name="fade">
-        <span v-if="ui.sidebarOpen" class="ml-3 font-bold text-slate-800 dark:text-white whitespace-nowrap">AdminKit</span>
+      <Transition name="fade-slide">
+        <span v-if="ui.sidebarOpen" class="ml-4 font-extrabold text-lg bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500 dark:from-white dark:to-slate-400 whitespace-nowrap">AdminKit</span>
       </Transition>
     </div>
 
@@ -26,16 +26,19 @@
           v-show="!item.permissions || item.permissions.every(p => auth.hasPermission(p))"
           :key="item.name"
           :to="item.to"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group"
+          class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold transition-all relative group overflow-hidden"
           :class="isActive(item.to)
-            ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300'
-            : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700/50'"
+            ? 'text-primary-600 dark:text-primary-400 bg-primary-500/10'
+            : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-500/5'"
           :title="!ui.sidebarOpen ? item.label : undefined"
         >
-          <component :is="item.icon" class="w-5 h-5 shrink-0"
+          <!-- Active Indicator Bar -->
+          <div v-if="isActive(item.to)" class="absolute left-0 top-1/4 bottom-1/4 w-1 bg-primary-600 rounded-r-full"></div>
+          
+          <component :is="item.icon" class="w-5 h-5 shrink-0 transition-transform duration-300 group-hover:scale-110"
             :class="isActive(item.to) ? 'text-primary-600 dark:text-primary-400' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200'"
           />
-          <Transition name="fade">
+          <Transition name="fade-slide">
             <span v-if="ui.sidebarOpen" class="whitespace-nowrap">{{ item.label }}</span>
           </Transition>
         </RouterLink>
@@ -68,7 +71,8 @@ import { useUiStore }   from '@/stores/ui'
 import { LayoutDashboard, ChartColumn, User, Users, Settings, ShieldCheck,  Building,
   Kanban,
   FileText,
-  LifeBuoy
+  LifeBuoy,
+  ClipboardList
 } from 'lucide-vue-next'
 
 const auth  = useAuthStore()
@@ -113,9 +117,10 @@ const navGroups: NavGroup[] = [
   {
     label: '管理員',
     items: [
-      { name: 'users', label: '用戶管理', to: '/admin/users', icon: Users, permissions: ['users:view'] },
-      { name: 'roles', label: '角色管理', to: '/admin/roles', icon: ShieldCheck, permissions: ['roles:view'] },
-      { name: 'settings', label: '系統設定', to: '/admin/settings', icon: Settings, permissions: ['settings:view'] },
+      { name: 'users',    label: '用戶管理', to: '/admin/users',    icon: Users,       permissions: ['users:view'] },
+      { name: 'roles',    label: '角色管理', to: '/admin/roles',    icon: ShieldCheck, permissions: ['roles:view'] },
+      { name: 'settings', label: '系統設定', to: '/admin/settings', icon: Settings,    permissions: ['settings:view'] },
+      { name: 'audit',    label: '稽核日誌', to: '/admin/audit',    icon: ClipboardList, permissions: ['audit:view'] },
     ],
   },
 ]
@@ -126,6 +131,12 @@ function isActive(path: string) {
 </script>
 
 <style scoped>
+.fade-slide-enter-active, .fade-slide-leave-active { 
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+}
+.fade-slide-enter-from { opacity: 0; transform: translateX(-10px); }
+.fade-slide-leave-to   { opacity: 0; transform: translateX(-10px); }
+
 .fade-enter-active, .fade-leave-active { transition: opacity 0.15s; }
 .fade-enter-from, .fade-leave-to       { opacity: 0; }
 </style>

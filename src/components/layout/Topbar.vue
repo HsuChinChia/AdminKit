@@ -1,9 +1,9 @@
 <template>
-  <header class="h-16 bg-white dark:bg-surface-dark-muted border-b border-surface-border dark:border-surface-dark-border flex items-center justify-between px-6 shrink-0">
+  <header class="h-20 glass border-b border-white/10 dark:border-white/5 flex items-center justify-between px-8 shrink-0 relative z-30">
     <!-- 左：折疊 + 麵包屑 -->
     <div class="flex items-center gap-4">
-      <button @click="ui.toggleSidebar()" class="btn-ghost p-2 rounded-lg">
-        <PanelLeft class="w-5 h-5" />
+      <button @click="ui.toggleSidebar()" class="btn-ghost p-2.5 rounded-xl transition-transform active:scale-95">
+        <PanelLeft class="w-5 h-5 text-slate-500" />
       </button>
       <nav class="flex items-center gap-1 text-sm">
         <span class="text-slate-400">AdminKit</span>
@@ -15,9 +15,9 @@
     <!-- 右：工具列 -->
     <div class="flex items-center gap-2">
       <!-- 主題切換 -->
-      <button @click="ui.toggleTheme()" class="btn-ghost p-2 rounded-lg">
-        <Sun v-if="ui.theme === 'dark'" class="w-5 h-5" />
-        <Moon v-else class="w-5 h-5" />
+      <button @click="ui.toggleTheme()" class="btn-ghost p-2.5 rounded-xl hover:scale-110 active:scale-90 transition-all duration-300">
+        <Sun v-if="ui.theme === 'dark'" class="w-5 h-5 text-amber-400" />
+        <Moon v-else class="w-5 h-5 text-indigo-500" />
       </button>
 
       <!-- 用戶下拉 -->
@@ -36,16 +36,20 @@
         </button>
 
         <Transition name="dropdown">
-          <div v-if="open" class="absolute right-0 top-full mt-2 w-48 card shadow-lg z-50">
-            <div class="py-1">
+          <div v-if="open" class="absolute right-0 top-full mt-3 w-56 glass border-white/20 dark:border-white/5 rounded-2xl shadow-premium z-50 overflow-hidden">
+            <div class="py-2">
+              <div class="px-4 py-3 border-b border-white/10 dark:border-white/5 mb-1">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">目前身份</p>
+                <p class="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{{ auth.profile?.username || '管理員' }}</p>
+              </div>
               <RouterLink to="/profile" @click="open = false"
-                class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 transition-all">
                 <User class="w-4 h-4" />個人資料
               </RouterLink>
-              <hr class="my-1 border-surface-border dark:border-surface-dark-border" />
+              <hr class="my-1 border-white/10 dark:border-white/5" />
               <button @click="handleLogout"
-                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
-                <LogOut class="w-4 h-4" />登出
+                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-500/10 transition-all">
+                <LogOut class="w-4 h-4" />登出系統
               </button>
             </div>
           </div>
@@ -79,6 +83,9 @@ async function handleLogout() {
 </script>
 
 <style scoped>
-.dropdown-enter-active, .dropdown-leave-active { transition: opacity 0.15s, transform 0.15s; }
-.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-0.5rem); }
+.dropdown-enter-active, .dropdown-leave-active { 
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+}
+.dropdown-enter-from { opacity: 0; transform: translateY(10px) scale(0.95); }
+.dropdown-leave-to { opacity: 0; transform: translateY(10px) scale(0.95); }
 </style>

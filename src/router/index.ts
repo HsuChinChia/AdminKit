@@ -99,6 +99,12 @@ const router = createRouter({
           name: 'AdminSettings',
           component: () => import('@/views/admin/SettingsView.vue'),
           meta: { title: '系統設定', permissions: ['settings:view'] }
+        },
+        {
+          path: 'admin/audit',
+          name: 'AdminAuditLog',
+          component: () => import('@/views/admin/AuditLogView.vue'),
+          meta: { title: '稽核日誌', permissions: ['audit:view'] }
         }
       ],
     },

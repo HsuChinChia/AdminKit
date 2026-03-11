@@ -37,13 +37,22 @@
         {{ value ? new Date(String(value)).toLocaleDateString('zh-TW') : '-' }}
       </template>
       <template #cell-actions="{ row }">
-        <button 
-          @click="openModal(row)"
-          class="p-2 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20"
-          title="編輯角色"
-        >
-          <Edit2 class="w-4 h-4" />
-        </button>
+        <div class="flex gap-1">
+          <button 
+            @click="openModal(row)"
+            class="p-2 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/20"
+            title="編輯角色"
+          >
+            <Edit2 class="w-4 h-4" />
+          </button>
+          <button 
+            @click="confirmDelete(row)"
+            class="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+            title="刪除角色"
+          >
+            <Trash2 class="w-4 h-4" />
+          </button>
+        </div>
       </template>
     </DataTable>
 
@@ -133,7 +142,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useCRUD } from '@/composables/useCRUD'
 import { useNotificationStore } from '@/stores/notifications'
 import { supabase } from '@/lib/supabase'
-import { ShieldPlus, Edit2, X, Loader2 } from 'lucide-vue-next'
+import { ShieldPlus, Edit2, Trash2, X, Loader2 } from 'lucide-vue-next'
 import DataTable from '@/components/data/DataTable.vue'
 
 interface Role {
@@ -277,24 +286,16 @@ async function saveRole() {
   
   try {
     if (isEditing.value) {
-      // 編輯更新
       const { error } = await supabase
         .from('roles')
-        .update({
-          name: form.name,
-          permissions: form.permissions
-        })
+        .update({ name: form.name, permissions: form.permissions })
         .eq('id', form.id)
       if (error) throw error
       notify.success(`已更新角色「${form.name}」`, '更新成功')
     } else {
-      // 新增創建
       const { error } = await supabase
         .from('roles')
-        .insert({
-          name: form.name,
-          permissions: form.permissions
-        })
+        .insert({ name: form.name, permissions: form.permissions })
       if (error) throw error
       notify.success(`已建立新角色「${form.name}」`, '建立成功')
     }
@@ -305,6 +306,17 @@ async function saveRole() {
     notify.error(err.message || '儲存失敗', '錯誤')
   } finally {
     saving.value = false
+  }
+}
+
+async function confirmDelete(role: Role) {
+  if (!confirm(`確定要刪除角色「${role.name}」嗎？\n\n注意：刪除後，已指派此角色的用戶將失去對應權限。`)) return
+  const { error } = await supabase.from('roles').delete().eq('id', role.id)
+  if (error) {
+    notify.error(error.message, '刪除失敗')
+  } else {
+    notify.success(`已刪除角色「${role.name}」`)
+    loadData()
   }
 }
 </script>

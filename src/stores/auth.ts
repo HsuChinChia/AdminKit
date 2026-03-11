@@ -76,7 +76,13 @@ export const useAuthStore = defineStore('auth', () => {
       .from('profiles')
       .update(updates)
       .eq('id', user.value!.id)
-      .select()
+      .select(`
+        *,
+        roles:role_id (
+          name,
+          permissions
+        )
+      `)
       .single()
     if (!error) profile.value = data
     return { data, error }

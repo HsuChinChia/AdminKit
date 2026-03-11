@@ -312,10 +312,10 @@ onMounted(async () => {
 async function updateStats() {
   const { data: counts } = await supabase.from('tickets').select('status, priority')
   if (counts) {
-    stats.value[0].value = counts.filter(t => t.status === 'open').length.toString()
-    stats.value[1].value = counts.filter(t => t.status === 'in_progress').length.toString()
-    stats.value[2].value = counts.filter(t => t.status === 'resolved' || t.status === 'closed').length.toString()
-    stats.value[3].value = counts.filter(t => t.priority === 'urgent' || t.priority === 'high').length.toString()
+    if (stats.value[0]) stats.value[0].value = counts.filter(t => t.status === 'open').length.toString()
+    if (stats.value[1]) stats.value[1].value = counts.filter(t => t.status === 'in_progress').length.toString()
+    if (stats.value[2]) stats.value[2].value = counts.filter(t => t.status === 'resolved' || t.status === 'closed').length.toString()
+    if (stats.value[3]) stats.value[3].value = counts.filter(t => t.priority === 'urgent' || t.priority === 'high').length.toString()
   }
 }
 
