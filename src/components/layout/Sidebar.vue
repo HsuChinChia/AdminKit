@@ -1,20 +1,24 @@
 <template>
   <aside :class="[
-    'flex flex-col glass border-r border-white/10 dark:border-white/5 shrink-0 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) relative z-20',
-    ui.sidebarOpen ? 'w-72' : 'w-20',
+    'flex flex-col glass border-r border-white/10 dark:border-white/5 shrink-0 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) z-40',
+    'fixed inset-y-0 left-0 lg:relative',
+    ui.sidebarOpen ? 'w-72 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0',
+    !ui.sidebarOpen && 'lg:w-20'
   ]">
     <!-- Logo -->
     <div class="flex items-center h-20 px-6 border-b border-white/10 dark:border-white/5">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-600/30 flex items-center justify-center shrink-0">
-        <LayoutDashboard class="w-5 h-5 text-white" />
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 shadow-lg shadow-primary-600/30 flex items-center justify-center shrink-0">
+          <LayoutDashboard class="w-5 h-5 text-white" />
+        </div>
+        <Transition name="fade-slide">
+          <span v-if="ui.sidebarOpen" class="ml-4 font-extrabold text-lg bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500 dark:from-white dark:to-slate-400 whitespace-nowrap">AdminKit</span>
+        </Transition>
       </div>
-      <Transition name="fade-slide">
-        <span v-if="ui.sidebarOpen" class="ml-4 font-extrabold text-lg bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-500 dark:from-white dark:to-slate-400 whitespace-nowrap">AdminKit</span>
-      </Transition>
     </div>
 
     <!-- 導航連結 -->
-    <nav class="flex-1 py-4 space-y-1 px-2">
+    <nav class="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
       <template v-for="group in navGroups" :key="group.label">
         <Transition name="fade">
           <p v-if="ui.sidebarOpen" class="text-[10px] font-semibold uppercase tracking-widest text-slate-400 px-3 mb-1 mt-3">
@@ -26,6 +30,7 @@
           v-show="!item.permissions || item.permissions.every(p => auth.hasPermission(p))"
           :key="item.name"
           :to="item.to"
+          @click="handleNavClick"
           class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold transition-all relative group overflow-hidden"
           :class="isActive(item.to)
             ? 'text-primary-600 dark:text-primary-400 bg-primary-500/10'
@@ -72,7 +77,8 @@ import { LayoutDashboard, ChartColumn, User, Users, Settings, ShieldCheck,  Buil
   Kanban,
   FileText,
   LifeBuoy,
-  ClipboardList
+  ClipboardList,
+  X
 } from 'lucide-vue-next'
 
 const auth  = useAuthStore()
@@ -127,6 +133,12 @@ const navGroups: NavGroup[] = [
 
 function isActive(path: string) {
   return route.path.startsWith(path)
+}
+
+function handleNavClick() {
+  if (window.innerWidth < 1024) {
+    ui.closeSidebar()
+  }
 }
 </script>
 
